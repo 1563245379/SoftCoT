@@ -23,7 +23,7 @@ class GSM8KLoader(Loader):
 
         return ds
 
-    def load(self, paths: Union[str, Dict[str, str]] = '/path/to/data/dir') -> DataBundle:
+    def load(self, paths: Union[str, Dict[str, str]] = os.path.join(os.path.dirname(__file__), 'data', 'gsm8k')) -> DataBundle:
         if isinstance(paths, str):
             paths = {
                 'train': os.path.join(paths, 'train_socratic.jsonl'),

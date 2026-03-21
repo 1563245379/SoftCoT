@@ -1,6 +1,7 @@
 fastNLP==0.7.0
 torch==2.7.0
 transformers==4.51.0
+torchvision==0.22.0
 
 pandas
 tqdm
