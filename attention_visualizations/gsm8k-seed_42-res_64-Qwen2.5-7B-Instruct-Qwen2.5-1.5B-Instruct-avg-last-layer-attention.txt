@@ -1,0 +1,7 @@
+heatmap_path: ./attention_visualizations/gsm8k-seed_42-res_64-Qwen2.5-7B-Instruct-Qwen2.5-1.5B-Instruct-avg-last-layer-attention.png
+attention_sample_count: 10
+attention_resolution: 64
+thought_region_bins: [62, 63)
+average_thought_attention_received: 0.000987
+average_thought_attention_emitted: 0.003788
+average_thought_self_attention: 0.050046
