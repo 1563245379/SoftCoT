@@ -16,6 +16,9 @@ tune_assistant_model=false
 print_input=false
 print_response=false
 print_thought_token_topk=false
+visualize_attention_matrix=false
+attention_vis_resolution=64
+attention_vis_output=""
 log_dir="inference_logs"
 run_name=""
 
@@ -37,6 +40,9 @@ while [[ $# -gt 0 ]]; do
         --print_input) print_input=true; shift ;;
         --print_response) print_response=true; shift ;;
         --print_thought_token_topk) print_thought_token_topk=true; shift ;;
+        --visualize_attention_matrix) visualize_attention_matrix=true; shift ;;
+        --attention_vis_resolution) attention_vis_resolution="${2}"; shift 2 ;;
+        --attention_vis_output) attention_vis_output="${2}"; shift 2 ;;
         --log_dir) log_dir="${2}"; shift 2 ;;
         --run_name) run_name="${2}"; shift 2 ;;
         *) echo "Unknown argument: ${1}"; shift ;;
@@ -56,6 +62,9 @@ echo "Tune Assistant Model: ${tune_assistant_model}"
 echo "Print Input: ${print_input}"
 echo "Print Response: ${print_response}"
 echo "Print Thought Token TopK: ${print_thought_token_topk}"
+echo "Visualize Attention Matrix: ${visualize_attention_matrix}"
+echo "Attention Visualization Resolution: ${attention_vis_resolution}"
+echo "Attention Visualization Output: ${attention_vis_output}"
 echo "Logs will be saved in: ${log_dir}"
 echo "Run Name is : <|start|>${run_name}<|end|>"
 echo "----------------------------------------"
@@ -89,13 +98,16 @@ for ((seed=seed_from; seed<=seed_to; seed++)); do
 --num_return_sequences ${num_return_sequences} \
 --task_name \"${task_name}\" \
 --seed ${seed} \
---test_k ${test_k}"
+--test_k ${test_k} \
+--attention_vis_resolution ${attention_vis_resolution}"
 
     # Add optional flags
     ${tune_assistant_model} && cmd+=" --tune_assistant_model"
     ${print_input} && cmd+=" --print_input"
     ${print_response} && cmd+=" --print_response"
     ${print_thought_token_topk} && cmd+=" --print_thought_token_topk"
+    ${visualize_attention_matrix} && cmd+=" --visualize_attention_matrix"
+    [[ -n "${attention_vis_output}" ]] && cmd+=" --attention_vis_output \"${attention_vis_output}\""
 
     # Run the command and redirect output
     echo "${cmd} > \"${log_file_name}\""
