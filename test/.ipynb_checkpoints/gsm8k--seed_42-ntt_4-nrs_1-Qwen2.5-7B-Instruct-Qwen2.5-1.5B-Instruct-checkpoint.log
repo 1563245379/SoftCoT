@@ -1,0 +1,3 @@
+Args: {'base_model_id': 'Qwen/Qwen2.5-7B-Instruct', 'assistant_model_id': 'Qwen/Qwen2.5-1.5B-Instruct', 'params_file_name': './ckpt/Qwen2.5-7B-1.5B-gsm8k-gsm8k-10.0-32-Qwen2.5-7B-Instruct-Qwen2.5-1.5B-Instruct/projection.bin', 'base_model_ckpt': 'None', 'assistant_model_ckpt': 'None', 'num_thought_tokens': 4, 'num_return_sequences': 1, 'task_name': 'gsm8k', 'print_input': True, 'print_response': True, 'test_k': 0, 'seed': 42, 'tune_base_model': False, 'tune_assistant_model': False}
+Load weights from file `./ckpt/Qwen2.5-7B-1.5B-gsm8k-gsm8k-10.0-32-Qwen2.5-7B-Instruct-Qwen2.5-1.5B-Instruct/projection.bin` for projection module.
+Successfully Init Model `EfficientSoftCoTFromSmallModel`
