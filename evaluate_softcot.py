@@ -27,6 +27,7 @@ args.add_argument('--task_name', type=str, choices=[
 ])
 args.add_argument('--print_input', action='store_true', default=False)
 args.add_argument('--print_response', action='store_true', default=False)
+args.add_argument('--print_thought_token_topk', action='store_true', default=False)
 args.add_argument('--test_k', type=int, default=0)
 args.add_argument('--seed', type=int, default=42)
 args.add_argument('--tune_base_model', action='store_true', default=False)
@@ -44,6 +45,7 @@ num_return_sequences = arg.num_return_sequences
 task_name = arg.task_name
 print_input = arg.print_input
 print_response = arg.print_response
+print_thought_token_topk = arg.print_thought_token_topk
 test_k = arg.test_k
 seed = arg.seed
 tune_base_model = arg.tune_base_model
@@ -189,6 +191,7 @@ for idx, ins in enumerate(tqdm(ds)):
         inputs_embeds,
         inputs['thought_index'],
         print_input,
+        print_thought_token_topk,
     )
 
     torch.manual_seed(seed)

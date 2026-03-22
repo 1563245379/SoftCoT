@@ -15,6 +15,7 @@ test_k=0
 tune_assistant_model=false
 print_input=false
 print_response=false
+print_thought_token_topk=false
 log_dir="inference_logs"
 run_name=""
 
@@ -35,6 +36,7 @@ while [[ $# -gt 0 ]]; do
         --tune_assistant_model) tune_assistant_model=true; shift ;;
         --print_input) print_input=true; shift ;;
         --print_response) print_response=true; shift ;;
+        --print_thought_token_topk) print_thought_token_topk=true; shift ;;
         --log_dir) log_dir="${2}"; shift 2 ;;
         --run_name) run_name="${2}"; shift 2 ;;
         *) echo "Unknown argument: ${1}"; shift ;;
@@ -53,6 +55,7 @@ echo "Test K: ${test_k}"
 echo "Tune Assistant Model: ${tune_assistant_model}"
 echo "Print Input: ${print_input}"
 echo "Print Response: ${print_response}"
+echo "Print Thought Token TopK: ${print_thought_token_topk}"
 echo "Logs will be saved in: ${log_dir}"
 echo "Run Name is : <|start|>${run_name}<|end|>"
 echo "----------------------------------------"
@@ -92,6 +95,7 @@ for ((seed=seed_from; seed<=seed_to; seed++)); do
     ${tune_assistant_model} && cmd+=" --tune_assistant_model"
     ${print_input} && cmd+=" --print_input"
     ${print_response} && cmd+=" --print_response"
+    ${print_thought_token_topk} && cmd+=" --print_thought_token_topk"
 
     # Run the command and redirect output
     echo "${cmd} > \"${log_file_name}\""

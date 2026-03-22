@@ -105,6 +105,47 @@ class SoftCoTAbstractClass(nn.Module):
 
         logger.info(f'Successfully saved [{", ".join(save_detail)}] to dir `{save_model_dir_root}`.')
 
+    def log_thought_token_topk(
+        self,
+        assistant_outputs,
+        assistant_input_ids,
+        thought_index,
+        top_k=10,
+    ):
+        logits = assistant_outputs['logits']
+        probabilities = torch.softmax(logits, dim=-1)
+        batch_size = assistant_input_ids.size(0)
+
+        for b in range(batch_size):
+            assistant_thought_start_idx = thought_index[b, 2].item()
+            assistant_thought_end_idx = thought_index[b, 3].item()
+            if assistant_thought_end_idx <= assistant_thought_start_idx:
+                logger.info(f'Instance {b + 1}/{batch_size} - No thought tokens to decode.')
+                continue
+
+            raw_assistant_inputs = self.assistant_tokenizer.decode(
+                assistant_input_ids[b, assistant_thought_start_idx: assistant_thought_end_idx]
+            )
+            logger.info(
+                f'Instance {b + 1}/{batch_size} - Assistant thought token placeholders: '
+                f'<|start|>{raw_assistant_inputs}<|end|>'
+            )
+
+            for token_offset, token_idx in enumerate(range(assistant_thought_start_idx, assistant_thought_end_idx)):
+                token_probabilities, token_ids = torch.topk(probabilities[b, token_idx], k=top_k)
+                decoded_tokens = [
+                    self.assistant_tokenizer.decode([candidate_id.item()]).replace('\n', '\\n')
+                    for candidate_id in token_ids
+                ]
+                topk_message = ', '.join(
+                    f'{decoded_token} ({candidate_probability.item():.4f})'
+                    for decoded_token, candidate_probability in zip(decoded_tokens, token_probabilities)
+                )
+                logger.info(
+                    f'Instance {b + 1}/{batch_size} - Thought token {token_offset + 1}/'
+                    f'{assistant_thought_end_idx - assistant_thought_start_idx} top-{top_k}: {topk_message}'
+                )
+
 
 class EfficientSoftCoTFromSmallModel(SoftCoTAbstractClass):
 
@@ -220,6 +261,7 @@ class EfficientSoftCoTFromSmallModel(SoftCoTAbstractClass):
         inputs_embeds,
         thought_index,
         print_index=False,
+        print_thought_token_topk=False,
     ):
         if self.num_thought_tokens == 0:
             if print_index:
@@ -234,6 +276,12 @@ class EfficientSoftCoTFromSmallModel(SoftCoTAbstractClass):
             output_hidden_states=True,
             return_dict=True,
         )
+        if print_thought_token_topk:
+            self.log_thought_token_topk(
+                assistant_outputs=assistant_outputs,
+                assistant_input_ids=assistant_input_ids,
+                thought_index=thought_index,
+            )
         assistant_hidden_states = assistant_outputs['hidden_states'][-1]
         if isinstance(self.projection, nn.Linear):
             projected_inputs_embeds = self.projection(assistant_hidden_states)
